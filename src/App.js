@@ -1,24 +1,37 @@
 import './App.css';
 import * as Tone from 'tone'
 import React, { useState } from 'react';
-import * as d3 from 'd3';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import $ from 'jquery';
+
 import Legend from './Legend.jsx';
 import Cube from './Cube.jsx';
 import Environment from './Environment.jsx';
-function App() {
+class App extends React.Component {
+
+constructor(props) {
+  super(props);
+
+}
+
+componentDidMount() {
+
+
+
 
 
 let scene;
 let skybox;
 
+
 function initScene() {
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color( 0x222244 );
+  //scene.background = new THREE.Color( 0x222244 );
   scene.add( new THREE.AmbientLight( 0x444444 ) );
-  scene.fog = new THREE.Fog( 0x222244, 1600, 2000 ); 
+  //scene.fog = new THREE.FogExp2(0xffffff)
+  scene.fog = new THREE.Fog( 0x000000, 4000, 8000 ); 
 
   // Create snowy field plane
   let planeGeom = new THREE.PlaneGeometry(10000,10000);
@@ -28,23 +41,60 @@ function initScene() {
   // Rotate to viewable angle
   plane.rotation.x = Math.PI / 2;
 
-  // Create skybox
-  let skyGeom = new THREE.BoxGeometry(10000, 10000, 10000);
-  skybox = new THREE.Mesh(skyGeom);
 
-  scene.add(skybox);
+
+
   scene.add(plane);
 
 
-  // Manually load in skybox images
-  const ft = new THREE.TextureLoader().load("GTX_ft.jpg");
-  const bk = new THREE.TextureLoader().load("purplenebula_bk.jpg");
-  const up = new THREE.TextureLoader().load("purplenebula_up.jpg");
-  const dn = new THREE.TextureLoader().load("purplenebula_dn.jpg");
-  const rt = new THREE.TextureLoader().load("purplenebula_rt.jpg");
-  const lf = new THREE.TextureLoader().load("purplenebula_lf.jpg");
+  const stars = [];
+  let numstars = 500;
+  for(var i = 0; i < numstars; i++) {
 
-  
+    const x = THREE.MathUtils.randFloatSpread(2000);
+    const y = THREE.MathUtils.randFloatSpread(2000);
+    const z = THREE.MathUtils.randFloatSpread(2000);
+    
+    stars.push(x,y,z);
+
+  }
+
+  const starGeom = new THREE.BufferGeometry();
+  starGeom.setAttribute('position', new THREE.Float32BufferAttribute(stars, 3));
+
+  const starMat = new THREE.PointsMaterial({ color: 0x888888 });
+
+  const points = new THREE.Points(starGeom, starMat);
+
+  scene.add(stars);
+
+
+  // // Manually load in skybox images
+  // const ft = new THREE.TextureLoader().load("/skybox/GTX_ft.png");
+  // const bk = new THREE.TextureLoader().load("/skybox/GTX_bk.png");
+  // const up = new THREE.TextureLoader().load("/skybox/GTX_up.png");
+  // const dn = new THREE.TextureLoader().load("/skybox/GTX_dn.png");
+  // const rt = new THREE.TextureLoader().load("/skybox/GTX_rt.png");
+  // const lf = new THREE.TextureLoader().load("/skybox/GTX_lf.png");
+
+  // // Create skybox
+  // let skyGeom = new THREE.BoxGeometry(10000, 10000, 10000);
+  // let textures = [ft,bk,up,dn,lf,rt];
+  // let materials = [];
+
+  // textures.forEach(d => {
+
+  //     materials.push(new THREE.MeshBasicMaterial({ map: d, side: THREE.BackSide  }));
+
+  // });
+
+  // var skyMaterial = new THREE.MeshFaceMaterial(materials);
+  // skybox = new THREE.Mesh(skyGeom, materials);
+
+  scene.add(skybox);
+  // skybox.position.x = 0;
+  // skybox.position.y = 1000;
+  // skybox.position.z = 0;
 
 }
   
@@ -59,7 +109,10 @@ function initScene() {
     renderer.setSize( window.innerWidth, window.innerHeight );
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.setPixelRatio( window.devicePixelRatio );
-    document.body.appendChild( renderer.domElement );
+
+    ///$(".App").append(renderer.domElement)
+
+
 
     const controls = new OrbitControls( camera, renderer.domElement );
     controls.maxPolarAngle = Math.PI * 0.495;
@@ -85,8 +138,40 @@ function initScene() {
 
   }
 
+  function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+
+  // Call animate method and get this gravy train rolling!
+  window.addEventListener('resize', onWindowResize, false);
   animate();
 
+    document.body.appendChild( renderer.domElement );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+  render() {
   return (
     <>
     <head>
@@ -95,7 +180,8 @@ function initScene() {
 
     </head>
 
-    <div className="App">
+    
+    <div className="App" id="App">
 
 {/*        <Cube 
           color={colorC}
@@ -114,7 +200,8 @@ function initScene() {
     </div>
 
     </>
-  );
+  )
+}
 }
 
 export default App;
