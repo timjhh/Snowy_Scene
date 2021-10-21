@@ -1,0 +1,24 @@
+.App {
+  text-align: center;
+}
+.legend {
+  position: absolute;
+  background-color: #222;
+  border: 1px solid white;
+  padding-left: 1em;
+  padding-right: 1em;
+  writing-mode: bt-lr; /* IE */
+  background-color: #455A64;
+}
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+
