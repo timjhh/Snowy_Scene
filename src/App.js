@@ -20,6 +20,9 @@ componentDidMount() {
 
 let scene;
 let skybox;
+var stars = [];
+var snows = [];
+
 
 
 function initScene() {
@@ -44,10 +47,18 @@ function initScene() {
 
 
 
+
   let numStars = 4000;
+  let numSnow = 1000;
+
 
   // Maximum distance star can take
   var max = 10000;
+
+  // Maximum distnace snow can take
+  var maxSnow = 5000;
+
+
 
   // Range to extend stars around plane
   // If we generate a # [-100,100], range=10 will
@@ -66,7 +77,7 @@ function initScene() {
     star.position.x = ((max/2) - (Math.random() * max)) * range;
 
     // Only positive values allowed
-    star.position.y = (Math.random() * max);
+    star.position.y = (Math.random() * max) + 4000;
     
 
     star.position.z = ((max/2) - (Math.random() * max)) * range;
@@ -74,17 +85,18 @@ function initScene() {
 
     star.scale.x = star.scale.y = 8;
 
-
+    stars.push(star);
     scene.add(star);
 
   }
 
-  let moonGeom = new THREE.SphereGeometry(400, 100, 100);
-  let moonMat = new THREE.MeshBasicMaterial({color: 0xffffff});
+  //let moonGeom = new THREE.SphereGeometry(400, 100, 100);
+  let moonGeom = new THREE.IcosahedronGeometry(400, 0);
+  let moonMat = new THREE.MeshBasicMaterial({color: 0xF4F6F0});
   let moon = new THREE.Mesh(moonGeom, moonMat);
 
   let color = "0xffffff";
-  let intensity = 0.8;
+  let intensity = 1;
 
   let moonLight = new THREE.DirectionalLight(color,intensity);
   moonLight.position.set(5000,5000,5000);
@@ -98,7 +110,56 @@ function initScene() {
   scene.add(moonLight);
   scene.add(moonLight.target);
 
+  for(var i = 0 ; i < numSnow; i++) {
 
+    let snowGeom = new THREE.IcosahedronGeometry(3, 0);
+    let snowMat = new THREE.MeshBasicMaterial({color: 0xffffff});
+    let snow = new THREE.Mesh(snowGeom, snowMat);
+
+
+    snow.position.x = ((maxSnow/2) - (Math.random() * maxSnow));
+
+    // Only positive values allowed
+    snow.position.y = (Math.random() * max);
+    
+
+    snow.position.z = ((maxSnow/2) - (Math.random() * maxSnow));
+
+
+    snows.push(snow);
+    scene.add(snow);
+
+  }
+
+
+  // Leaf color: #015045
+  let treeBase = new THREE.CylinderGeometry(5, 80, 2000, 32);
+  let treeMat = new THREE.MeshBasicMaterial( {color: "#3b3429", side : THREE.DoubleSide });
+  //let treeMat = new THREE.MeshPhongMaterial({color: "#015045", side : THREE.DoubleSide});
+  let tree = new THREE.Mesh(treeBase, treeMat);
+
+  let maxLeaves = 4;
+  for(var i = 1; i <= maxLeaves; i++) {
+    let leafGeom = new THREE.OctahedronGeometry(i*50, 0);
+    let leafMat = new THREE.MeshLambertMaterial({color: "#015045"});
+
+    let leaf = new THREE.Mesh(leafGeom, leafMat);
+
+    leaf.position.x = 500;
+    leaf.position.y = ((1-(1/i)) * 500) + 100;
+    leaf.position.z = 300;
+
+
+    scene.add(leaf);
+  }
+
+  tree.position.x = 500;
+  tree.position.z = 300;
+
+  //scene.add(tree);
+
+
+  // Some additional geometry ??
   let sqGeom = new THREE.BoxGeometry(80, 80, 80);
   let sqMat = new THREE.MeshBasicMaterial({color: 0x000000});
   let sq = new THREE.Mesh(sqGeom, sqMat);
@@ -141,10 +202,21 @@ function initScene() {
 
 
     camera.position.z = 15;
+
     initScene();
+
+
+
+
     function animate() {
 
 
+    snows.forEach(d => {
+
+      
+      d.position.y <= 0 ? d.position.y = 1000 : d.position.y-=0.5; 
+
+    });
 
     renderer.render( scene, camera );
     requestAnimationFrame( animate );
