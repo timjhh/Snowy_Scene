@@ -138,15 +138,15 @@ function initScene() {
   //let treeMat = new THREE.MeshPhongMaterial({color: "#015045", side : THREE.DoubleSide});
   let tree = new THREE.Mesh(treeBase, treeMat);
 
-  let maxLeaves = 4;
-  for(var i = 1; i <= maxLeaves; i++) {
+  let numLeaves = 4;
+  for(var i = numLeaves; i >= 1; i--) {
     let leafGeom = new THREE.OctahedronGeometry(i*50, 0);
     let leafMat = new THREE.MeshLambertMaterial({color: "#015045"});
 
     let leaf = new THREE.Mesh(leafGeom, leafMat);
 
     leaf.position.x = 500;
-    leaf.position.y = ((1-(1/i)) * 500) + 100;
+    leaf.position.y = ((i/numLeaves) * 100) + ((numLeaves-i) * 100);
     leaf.position.z = 300;
 
 
