@@ -22,3 +22,4 @@ node_modules/.cache/babel-loader/cb5165c5ab1bb379472ee125433607f9.json
 node_modules/.cache/babel-loader/dbc19d0258423a290a79fcfdb299a6c9.json
 node_modules/.cache/babel-loader/fd5ca2517189ffe0a332bd34daadfee3.json
 node_modules/.cache/.eslintcache
+*.json
