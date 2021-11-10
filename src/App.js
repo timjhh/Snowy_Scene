@@ -61,7 +61,8 @@ function initScene() {
   // Maximum distnace snow can take
   var maxSnow = 5000;
 
-
+  var snowSize = 6;
+  var minSnowSize = 0.05;
 
   // Range to extend stars around plane
   // If we generate a # [-100,100], range=10 will
@@ -116,10 +117,14 @@ function initScene() {
 
   for(var i = 0 ; i < numSnow; i++) {
 
-    let snowGeom = new THREE.IcosahedronGeometry(3, 0);
+
+
+    let size = Math.random()*snowSize+minSnowSize;
+    let snowGeom = new THREE.IcosahedronGeometry(size, 0);
     let snowMat = new THREE.MeshBasicMaterial({color: 0xffffff});
     let snow = new THREE.Mesh(snowGeom, snowMat);
 
+    snow.size = size;
 
     snow.position.x = ((maxSnow/2) - (Math.random() * maxSnow));
 
@@ -236,7 +241,8 @@ function initScene() {
     snows.forEach(d => {
 
       
-      d.position.y <= 0 ? d.position.y = 1000 : d.position.y-=0.5; 
+      d.position.y <= 0 ? d.position.y = 3000 : d.position.y-=d.size;
+
 
     });
 
