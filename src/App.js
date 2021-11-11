@@ -24,7 +24,16 @@ var planeLen = 8000;
 var stars = [];
 var snows = [];
 var orbits = [];
+var moon;
 let time = 0;
+
+// Period = Time taken for orbit
+// Angular frequency = 2*pi   /  Period
+// Orbital frequency constant for circular motion
+const frequency = ((2*Math.PI)/2000);
+
+// Theta = angle swept in time t = wt
+const totalTime = 360 / frequency;
 
 
 function initScene() {
@@ -50,12 +59,10 @@ function initScene() {
   scene.add(plane);
 
 
-
-
   let numStars = 4000;
   let numSnow = 1000;
   let numTrees = 30;
-  let numOrbits = 10;
+  let numOrbits = 1;
 
   // Maximum distance star can take
   var max = 10000;
@@ -100,7 +107,7 @@ function initScene() {
   // GENERATE A NUMBER OF ORBITING BODIES
   for(var i = 0; i < numOrbits; i++) {
 
-    let orbitGeom = new THREE.SphereGeometry(400, 0);
+    let orbitGeom = new THREE.SphereGeometry(400, 32, 16);
     let orbitMat = new THREE.MeshBasicMaterial({color: 0xF4F6F0});
     let orbit = new THREE.Mesh(orbitGeom, orbitMat);
 
@@ -111,9 +118,16 @@ function initScene() {
     // moonLight.position.set(planeLen,planeLen,planeLen);
     // moonLight.target.position.set(0,0,0);
 
-    orbit.position.x = (Math.random() * planeLen) - (planeLen/2);
-    orbit.position.y = planeLen;
-    orbit.position.z = (Math.random() * planeLen) - (planeLen/2);
+    // orbit.position.x = (Math.random() * planeLen) - (planeLen/2);
+    // orbit.position.y = planeLen/2;
+    // orbit.position.z = (Math.random() * planeLen) - (planeLen/2);
+    let randX = Math.floor(Math.random() * (360 / frequency));
+    let randZ = Math.floor(Math.random() * (360 / frequency));
+    console.log(randX);
+    console.log(randZ);
+    orbit.position.x = (-planeLen*Math.sin(frequency*randX));
+    orbit.position.y = planeLen/2;
+    orbit.position.z = (planeLen*Math.cos(frequency*randZ));
 
 
     scene.add(orbit);
@@ -125,7 +139,7 @@ function initScene() {
   let moonGeom = new THREE.IcosahedronGeometry(400, 0);
   let moonMat = new THREE.MeshBasicMaterial({color: 0xF4F6F0});
   //let moonMat = new THREE.MeshPhongMaterial({color: 0xF4F6F0});
-  let moon = new THREE.Mesh(moonGeom, moonMat);
+  moon = new THREE.Mesh(moonGeom, moonMat);
 
   let color = "0xffffff";
   let intensity = 1;
@@ -275,20 +289,32 @@ function initScene() {
 
     orbits.forEach(d => {
 
-      // Period = Time taken for orbit
-      // Angular frequency = 2*pi   /  Period
-
       // Uniform Circular Motion can be modeled by
       // r(t) = position vector
       // A = |r(t)| = magnitude of position vector = radius of circle
       // w = Angular frequency - radians of space passed through per second(velocity)
       // r(t) = [Acos(w)], [Asin(wtj)];
-      d.position.x = (planeLen*Math.cos((2*Math.PI)/2000));
-      d.position.z = (planeLen*Math.sin(((2*Math.PI)/2000)*time));
-      time++;
+      // d.position.x = (planeLen*Math.cos((2*Math.PI)/2000));
+      // d.position.z = (planeLen*Math.sin(((2*Math.PI)/2000)*time));
+
+      // Uniform Circular Velocity
+      // v(t) = -A w sin(wt)i + A cos (wt)j
+      // d.position.x += (planeLen*Math.cos(time));
+      // d.position.z += (planeLen*Math.sin(time));
+
+      d.position.x = (-planeLen*Math.sin(frequency*time));
+      d.position.z = (planeLen*Math.cos(frequency*time));
+
+      time = (time+1) % totalTime;
 
 
     });
+
+
+    moon.rotation.x = 10;
+    moon.rotation.y = 10;
+    moon.rotation.z = 10;
+
 
     renderer.render( scene, camera );
     requestAnimationFrame( animate );
