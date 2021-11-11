@@ -23,7 +23,8 @@ let skybox;
 var planeLen = 8000;
 var stars = [];
 var snows = [];
-
+var orbits = [];
+let time = 0;
 
 
 function initScene() {
@@ -33,7 +34,7 @@ function initScene() {
   scene.background = new THREE.Color( 0x222244 );
   //scene.add( new THREE.AmbientLight( 0x444444 ) );
   //scene.fog = new THREE.FogExp2(0xffffff)
-  scene.fog = new THREE.Fog( 0x222244, (100), (planeLen/2) ); 
+  //scene.fog = new THREE.Fog( 0x222244, (100), (planeLen/2) ); 
 
   // Create snowy field plane
   let planeGeom = new THREE.PlaneGeometry(planeLen,planeLen);
@@ -54,6 +55,7 @@ function initScene() {
   let numStars = 4000;
   let numSnow = 1000;
   let numTrees = 30;
+  let numOrbits = 10;
 
   // Maximum distance star can take
   var max = 10000;
@@ -91,6 +93,31 @@ function initScene() {
 
     stars.push(star);
     scene.add(star);
+
+  }
+
+
+  // GENERATE A NUMBER OF ORBITING BODIES
+  for(var i = 0; i < numOrbits; i++) {
+
+    let orbitGeom = new THREE.SphereGeometry(400, 0);
+    let orbitMat = new THREE.MeshBasicMaterial({color: 0xF4F6F0});
+    let orbit = new THREE.Mesh(orbitGeom, orbitMat);
+
+    let color = "0xffffff";
+    let intensity = 1;
+
+    // let moonLight = new THREE.DirectionalLight(color,intensity);
+    // moonLight.position.set(planeLen,planeLen,planeLen);
+    // moonLight.target.position.set(0,0,0);
+
+    orbit.position.x = (Math.random() * planeLen) - (planeLen/2);
+    orbit.position.y = planeLen;
+    orbit.position.z = (Math.random() * planeLen) - (planeLen/2);
+
+
+    scene.add(orbit);
+    orbits.push(orbit);
 
   }
 
@@ -242,6 +269,23 @@ function initScene() {
 
       
       d.position.y <= 0 ? d.position.y = 3000 : d.position.y-=d.size;
+
+
+    });
+
+    orbits.forEach(d => {
+
+      // Period = Time taken for orbit
+      // Angular frequency = 2*pi   /  Period
+
+      // Uniform Circular Motion can be modeled by
+      // r(t) = position vector
+      // A = |r(t)| = magnitude of position vector = radius of circle
+      // w = Angular frequency - radians of space passed through per second(velocity)
+      // r(t) = [Acos(w)], [Asin(wtj)];
+      d.position.x = (planeLen*Math.cos((2*Math.PI)/2000));
+      d.position.z = (planeLen*Math.sin(((2*Math.PI)/2000)*time));
+      time++;
 
 
     });
